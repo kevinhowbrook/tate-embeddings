@@ -40,7 +40,7 @@ COPY tests/ ./tests/
 
 # Pre-download the OpenCLIP model to cache it in the image (~350MB)
 # This makes first startup and tests much faster
-RUN python -c "import open_clip; model, _, _ = open_clip.create_model_and_transforms('ViT-B-32', pretrained='laion2b_s34b_b79k'); print('✓ Model cached in image')"
+# RUN python -c "import open_clip; model, _, _ = open_clip.create_model_and_transforms('ViT-B-32', pretrained='laion2b_s34b_b79k'); print('✓ Model cached in image')"
 
 # Expose port
 EXPOSE 8000
