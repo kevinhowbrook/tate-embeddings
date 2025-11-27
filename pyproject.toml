@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "tate-embeddings"
+version = "1.0.0"
+description = "Compute text and image embeddings for Tate artwork search using OpenCLIP"
+authors = ["Tate Media <digital@tate.org.uk>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+gunicorn = "^21.2.0"
+numpy = "<2.0"
+torch = {version = "^2.1.0", source = "pytorch-cpu"}
+torchvision = {version = "^0.16.0", source = "pytorch-cpu"}
+open-clip-torch = "^2.23.0"
+pillow = "^10.1.0"
+httpx = "^0.25.1"
+python-multipart = "^0.0.6"
+pydantic-settings = "^2.0.3"
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.21.1"
+httpx = "^0.25.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+

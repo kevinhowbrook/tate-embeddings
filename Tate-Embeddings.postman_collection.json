@@ -1,0 +1,386 @@
+{
+  "info": {
+    "_postman_id": "tate-embeddings-001",
+    "name": "Tate Embeddings Service",
+    "description": "API collection for the Tate Embeddings microservice. This service provides text and image embedding endpoints using OpenCLIP for cross-modal artwork search.\n\nBefore using:\n1. Import this collection into Postman\n2. Update the `base_url` variable if not using localhost:8000\n3. Update the `auth_token` variable with your AUTH_TOKEN\n4. Start making requests!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        },
+        "description": "Health check endpoint to verify the service is running. Does not require authentication."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"status\": \"ok\",\n    \"service\": \"tate-embeddings\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Embed Text",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"query\": \"impressionist painting of water lilies\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/embed-text",
+          "host": ["{{base_url}}"],
+          "path": ["embed-text"]
+        },
+        "description": "Generate a 512-dimensional embedding vector from a text query. The embedding can be used for semantic search against image embeddings."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"impressionist painting of water lilies\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"embedding\": [\n        0.023456789,\n        -0.012345678,\n        0.045678901,\n        ...\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Embed Image",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"url\": \"https://www.tate.org.uk/static/images/default.jpg\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/embed-image",
+          "host": ["{{base_url}}"],
+          "path": ["embed-image"]
+        },
+        "description": "Generate a 512-dimensional embedding vector from an image URL. The image is downloaded and processed by the OpenCLIP model."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://www.tate.org.uk/static/images/default.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-image",
+              "host": ["{{base_url}}"],
+              "path": ["embed-image"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"embedding\": [\n        0.034567890,\n        -0.023456789,\n        0.056789012,\n        ...\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Example Queries",
+      "item": [
+        {
+          "name": "Abstract Expressionist Painting",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"abstract expressionist painting\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Example query for abstract art style"
+          }
+        },
+        {
+          "name": "Renaissance Portrait",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"renaissance portrait\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Example query for classical portrait style"
+          }
+        },
+        {
+          "name": "Landscape with Mountains",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"landscape with mountains and trees\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Example query for nature landscape"
+          }
+        },
+        {
+          "name": "Dramatic Stormy Seascape",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"dramatic stormy seascape\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Example query with mood and subject"
+          }
+        },
+        {
+          "name": "Still Life with Flowers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"still life with flowers and fruit\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Example query for still life genre"
+          }
+        }
+      ],
+      "description": "Collection of example text queries you can try to test the embedding service"
+    },
+    {
+      "name": "Authentication Tests",
+      "item": [
+        {
+          "name": "Valid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"test query\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Should return 200 OK with valid bearer token"
+          }
+        },
+        {
+          "name": "Missing Token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"test query\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Should return 403 Forbidden - no authentication provided"
+          }
+        },
+        {
+          "name": "Invalid Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "wrong_token_12345",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"test query\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/embed-text",
+              "host": ["{{base_url}}"],
+              "path": ["embed-text"]
+            },
+            "description": "Should return 403 Forbidden - incorrect token"
+          }
+        }
+      ],
+      "description": "Test cases to verify authentication is working correctly"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8002",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "local_dev_token_123",
+      "type": "string"
+    }
+  ]
+}
