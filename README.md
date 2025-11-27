@@ -168,44 +168,56 @@ To use this service with the main Tate website locally:
 
 ## Quick Start: Making Your First Request
 
-### Step 1: Start the Service Locally
+### Step 1: Start the Service
 
-**Using Makefile with Docker (easiest):**
-
-```bash
-make run        # Builds image, installs dependencies, starts service
-```
-
-**Or manually with Docker:**
+Start the service with one command:
 
 ```bash
-docker build -t tate-embeddings .
-docker run -d --name tate-embeddings-container \
-  -p 8002:8000 \
-  -e AUTH_TOKEN="local_dev_token_123" \
-  -e MODEL_NAME="ViT-B-32" \
-  -e PRETRAINED="laion2b_s34b_b79k" \
-  tate-embeddings
+make run
 ```
 
-**Or with Poetry (no Docker):**
+This builds the Docker image, installs dependencies, and starts the service on `http://localhost:8002`.
 
-```bash
-make run-local
-# Or manually:
-poetry install
-export AUTH_TOKEN="local_dev_token_123"
-poetry run uvicorn app.main:app --reload --port 8002
-```
-
-Wait for the model to load (first time will download ~350MB). You'll see:
+Wait for startup to complete (~30 seconds first time as the model loads):
 
 ```
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8002
+✓ Container started: tate-embeddings-container
 ```
 
-### Step 2: Test with curl
+### Step 2: Test with Postman (Recommended)
+
+The easiest way to test the API is with our pre-configured Postman collection!
+
+#### Import the Collection
+
+1. **Open Postman** and click **Import** (top left)
+2. **Drag and drop** `Tate-Embeddings.postman_collection.json` from this repository
+3. **Click the collection** name to expand it
+
+#### What's Included
+
+- ✅ Health check endpoint
+- ✅ Text embedding endpoint
+- ✅ Image embedding endpoint
+- ✅ 5 example art queries (styles, subjects, moods)
+- ✅ Authentication test cases
+- ✅ Pre-configured auth token and URL
+
+#### Start Testing
+
+1. **Expand** any folder in the collection
+2. **Click** a request (try "Embed Text" → "Impressionist painting of water lilies")
+3. **Click Send**
+4. **View response** - you'll get a 512-dimensional embedding vector!
+
+The collection is pre-configured with:
+- `base_url`: `http://localhost:8002`
+- `auth_token`: `local_dev_token_123`
+
+**Change these** in Collection → Variables if needed.
+
+### Alternative: Test with curl
 
 #### Health Check
 
@@ -265,146 +277,13 @@ curl -X POST http://localhost:8002/embed-image \
 }
 ```
 
-### Step 3: Using Postman
+### Alternative: Interactive API Docs
 
-#### Import the Pre-configured Collection
+FastAPI provides automatic interactive documentation at **http://localhost:8002/docs**:
 
-We've included a ready-to-use Postman collection file!
-
-1. **Import the collection:**
-
-   - Open Postman
-   - Click **Import** (top left)
-   - Drag and drop `Tate-Embeddings.postman_collection.json` from this repository
-   - Or click **Upload Files** and select the file
-
-2. **The collection includes:**
-
-   - Health check endpoint
-   - Text embedding endpoint
-   - Image embedding endpoint
-   - 5 example text queries (art styles, subjects, moods)
-   - Authentication test cases (valid, invalid, missing tokens)
-
-3. **Configure variables (if needed):**
-
-   - Click on the collection name → **Variables** tab
-   - `base_url`: Default is `http://localhost:8002` (change if using different host/port)
-   - `auth_token`: Default is `local_dev_token_123` (change to match your AUTH_TOKEN)
-
-4. **Start making requests:**
-   - Expand the collection folders
-   - Click any request
-   - Click **Send**
-
-#### Manual Setup (Alternative)
-
-If you prefer to create requests manually:
-
-1. **Create a new request** in Postman
-
-2. **Configure Authentication:**
-
-   - Go to the **Authorization** tab
-   - Select **Type:** `Bearer Token`
-   - **Token:** `local_dev_token_123`
-
-3. **For Text Embedding:**
-
-   - **Method:** `POST`
-   - **URL:** `http://localhost:8002/embed-text`
-   - **Headers:**
-     - `Content-Type`: `application/json`
-   - **Body:** Select `raw` and `JSON`, then paste:
-     ```json
-     {
-       "query": "impressionist painting of water lilies"
-     }
-     ```
-   - Click **Send**
-
-4. **For Image Embedding:**
-   - **Method:** `POST`
-   - **URL:** `http://localhost:8002/embed-image`
-   - **Headers:**
-     - `Content-Type`: `application/json`
-   - **Body:** Select `raw` and `JSON`, then paste:
-     ```json
-     {
-       "url": "https://www.tate.org.uk/static/images/default.jpg"
-     }
-     ```
-   - Click **Send**
-
-#### Expected Response Format
-
-Both endpoints return a 512-dimensional embedding array:
-
-```json
-{
-  "embedding": [
-    0.023456789,
-    -0.012345678,
-    0.045678901,
-    0.067890123,
-    -0.089012345,
-    ...
-    (512 floating point numbers)
-  ]
-}
-```
-
-#### Common Test Queries
-
-Try these queries to see how embeddings work:
-
-**Art Styles:**
-
-- `"abstract expressionist painting"`
-- `"renaissance portrait"`
-- `"minimalist sculpture"`
-
-**Subjects:**
-
-- `"landscape with mountains and trees"`
-- `"portrait of a woman in blue dress"`
-- `"still life with flowers and fruit"`
-
-**Moods:**
-
-- `"dramatic stormy seascape"`
-- `"peaceful garden scene"`
-- `"vibrant colorful composition"`
-
-#### Testing Authentication
-
-**Missing Token (should fail):**
-
-- Remove the Authorization header
-- Expected: `403 Forbidden`
-
-**Invalid Token (should fail):**
-
-- Use token: `wrong_token`
-- Expected: `403 Forbidden`
-
-**Valid Token (should succeed):**
-
-- Use token: `local_dev_token_123`
-- Expected: `200 OK` with embedding array
-
-### Using the Interactive API Docs
-
-FastAPI provides automatic interactive documentation:
-
-1. Open your browser to: **http://localhost:8002/docs**
-2. Click **Authorize** button at the top
-3. Enter your token: `local_dev_token_123`
-4. Click **Authorize** then **Close**
-5. Expand any endpoint and click **Try it out**
-6. Enter your request data and click **Execute**
-
-This is useful for quick testing and exploring the API schema!
+1. Click **Authorize** and enter token: `local_dev_token_123`
+2. Expand any endpoint and click **Try it out**
+3. Enter your request data and click **Execute**
 
 ## Testing
 
