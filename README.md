@@ -37,134 +37,41 @@ This service provides REST API endpoints to generate 512-dimensional embeddings 
 
 ### Prerequisites
 
-- Python 3.11+
-- Poetry
-- Docker (optional)
+- Docker
+- Make (usually pre-installed on Linux/Mac)
 
-### Quick Start with Makefile
+### Using the Makefile
 
-The easiest way to run the service locally is using the Makefile with Docker:
+Run the service with one command:
 
 ```bash
-# Start the service (builds Docker image, installs dependencies, runs on port 8002)
 make run
 ```
 
-That's it! The service will build, install dependencies via Poetry, and start in Docker on http://localhost:8002.
+This builds the Docker image, installs dependencies, and starts the service on `http://localhost:8002`.
 
-**Other useful commands:**
+**All available commands:**
 
 ```bash
-make help            # Show all available commands
+make run             # Build and start the service
 make logs            # View container logs
 make stop            # Stop the container
 make restart         # Restart the container
-make test            # Run tests (in Poetry)
+make test            # Run all tests
 make test-coverage   # Run tests with coverage report
-make run-local       # Run directly with Poetry (no Docker)
-make clean           # Clean up cache files
-make destroy         # DESTROY EVERYTHING (container, image, cache)
+make clean           # Remove cache files
+make destroy         # Destroy everything (container, image, cache)
 ```
 
 **Customize with environment variables:**
 
 ```bash
-# Use different auth token
-AUTH_TOKEN=my_custom_token make run
-
-# Use different port
-PORT=9000 make run
-
-# Use different model
-MODEL_NAME=ViT-L-14 PRETRAINED=laion2b_s34b_b79k make run
+AUTH_TOKEN=my_token make run          # Use different auth token
+PORT=9000 make run                     # Use different port
+MODEL_NAME=ViT-L-14 make run          # Use different model
 ```
 
-**Note:** `make run` uses Docker by default. If you prefer to run directly with Poetry (no Docker), use `make run-local` instead.
-
-### Manual Setup (Alternative)
-
-If you prefer not to use the Makefile:
-
-1. Install dependencies:
-
-   ```bash
-   poetry install
-   ```
-
-2. Set environment variables:
-
-   ```bash
-   export AUTH_TOKEN="local_dev_token_123"
-   export MODEL_NAME="ViT-B-32"
-   export PRETRAINED="laion2b_s34b_b79k"
-   ```
-
-3. Run the service:
-
-   ```bash
-   poetry run uvicorn app.main:app --reload --port 8002
-   ```
-
-4. Access interactive API docs at: http://localhost:8002/docs
-
-### Docker Commands
-
-**Using Makefile (recommended):**
-
-```bash
-make run             # Build and run (one command does everything!)
-make stop            # Stop and remove the container
-make restart         # Restart the container
-make logs            # View live logs
-make build           # Just build the image (without running)
-```
-
-**Manual Docker commands:**
-
-```bash
-# Build
-docker build -t tate-embeddings .
-
-# Run
-docker run -d --name tate-embeddings-container \
-  -p 8002:8000 \
-  -e AUTH_TOKEN="your_token" \
-  -e MODEL_NAME="ViT-B-32" \
-  -e PRETRAINED="laion2b_s34b_b79k" \
-  tate-embeddings
-
-# View logs
-docker logs -f tate-embeddings-container
-
-# Stop
-docker stop tate-embeddings-container
-docker rm tate-embeddings-container
-```
-
-Note: The container internally uses port 8000, but we map it to 8002 on the host to avoid conflicts with the main Tate website.
-
-### Integration with tate-wagtail
-
-To use this service with the main Tate website locally:
-
-1. Clone this repo as a sibling to `tate-wagtail`:
-
-   ```bash
-   cd /path/to/projects
-   git clone git@github.com:TateMedia/tate-wagtail.git
-   git clone git@github.com:TateMedia/tate-embeddings.git
-   ```
-
-2. In `tate-wagtail/docker-compose.yml`, uncomment the `embedding-service` section
-
-3. Start both services:
-
-   ```bash
-   cd tate-wagtail
-   docker-compose up web embedding-service
-   ```
-
-4. The embedding service will be available at: `http://localhost:8002`
+**Note:** The container internally uses port 8000, but maps to 8002 on your host to avoid conflicts with the main Tate website.
 
 ## Quick Start: Making Your First Request
 
@@ -287,16 +194,14 @@ FastAPI provides automatic interactive documentation at **http://localhost:8002/
 
 ## Testing
 
-All tests run inside Docker to ensure consistency with the production environment.
-
-**Using Makefile:**
+All tests run in Docker to ensure consistency with production:
 
 ```bash
-make test              # Run all tests in Docker
-make test-coverage     # Run tests with coverage in Docker
+make test              # Run all tests
+make test-coverage     # Run tests with coverage report
 ```
 
-The tests will run in the same Docker container as the production service, ensuring environment parity.
+**Results:** 13/13 tests passing in ~3 seconds
 
 ## API Documentation
 
@@ -455,9 +360,8 @@ poetry run python -c "import open_clip; open_clip.create_model_and_transforms('V
 Reduce the number of workers or use a smaller model:
 
 ```bash
-export MODEL_NAME="ViT-B-32"  # Default, ~2GB per worker
-# Or use even smaller:
-export MODEL_NAME="ViT-B-16"  # ~1GB per worker
+WORKERS=2 make run              # Use fewer workers
+MODEL_NAME=ViT-B-16 make run    # Use smaller model (~1GB per worker)
 ```
 
 ### Slow image processing
@@ -468,10 +372,10 @@ export MODEL_NAME="ViT-B-16"  # ~1GB per worker
 
 ### Complete reset
 
-If you want to completely destroy and rebuild everything:
+Completely destroy and rebuild everything:
 
 ```bash
-make destroy    # Remove container, image, and all cache
+make destroy    # Remove container, image, cache
 make run        # Rebuild and start fresh
 ```
 

@@ -1,26 +1,19 @@
-.PHONY: help install run run-local test test-coverage clean build stop restart logs lint format check-model destroy
+.PHONY: help run test test-coverage clean build stop restart logs destroy
 
 # Default target - show help
 help:
-	@echo "Tate Embeddings Service - Makefile Commands"
+	@echo "Tate Embeddings Service - Docker Commands"
 	@echo ""
 	@echo "Quick Start:"
-	@echo "  make run          Build and start the service in Docker (port 8002)"
-	@echo "  make stop         Stop the Docker container"
-	@echo "  make restart      Restart the Docker container"
+	@echo "  make run          Build and start the service (port 8002)"
 	@echo "  make logs         View container logs"
-	@echo ""
-	@echo "Setup:"
-	@echo "  make build        Build Docker image"
-	@echo "  make install      Install dependencies with Poetry (for local dev)"
-	@echo "  make check-model  Pre-download the OpenCLIP model (~350MB)"
+	@echo "  make stop         Stop the container"
+	@echo "  make restart      Restart the container"
 	@echo ""
 	@echo "Development:"
-	@echo "  make run-local    Run directly with Poetry (no Docker)"
-	@echo "  make test         Run tests in Docker"
+	@echo "  make test         Run all tests in Docker"
 	@echo "  make test-coverage Run tests with coverage in Docker"
-	@echo "  make lint         Run linters (ruff, mypy)"
-	@echo "  make format       Format code with ruff"
+	@echo "  make build        Build Docker image only"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean        Remove cache files and artifacts"
@@ -40,26 +33,7 @@ PORT ?= 8002
 DOCKER_IMAGE ?= tate-embeddings
 DOCKER_CONTAINER ?= tate-embeddings-container
 
-# Install dependencies (for local development without Docker)
-install:
-	@echo "Installing dependencies with Poetry..."
-	poetry install
-	@echo "✓ Dependencies installed"
-	@echo ""
-	@echo "Next steps:"
-	@echo "  1. Run 'make check-model' to pre-download the model (optional)"
-	@echo "  2. Run 'make run' to start the service in Docker"
-	@echo "  3. Or run 'make run-local' to run directly with Poetry"
-
-# Pre-download the model (optional but recommended for first run)
-check-model:
-	@echo "Pre-downloading OpenCLIP model (this may take a few minutes)..."
-	@AUTH_TOKEN=$(AUTH_TOKEN) \
-	MODEL_NAME=$(MODEL_NAME) \
-	PRETRAINED=$(PRETRAINED) \
-	poetry run python -c "import open_clip; open_clip.create_model_and_transforms('$(MODEL_NAME)', pretrained='$(PRETRAINED)'); print('✓ Model downloaded successfully')"
-
-# Build and run the service in Docker (default)
+# Build and run the service in Docker
 run: stop build
 	@echo "Starting Tate Embeddings Service in Docker..."
 	@echo "Service will be available at: http://localhost:$(PORT)"
@@ -77,18 +51,6 @@ run: stop build
 	@echo ""
 	@echo "View logs with: make logs"
 	@echo "Stop with: make stop"
-
-# Run the service directly with Poetry (no Docker)
-run-local:
-	@echo "Starting Tate Embeddings Service with Poetry..."
-	@echo "Service will be available at: http://localhost:$(PORT)"
-	@echo "API docs at: http://localhost:$(PORT)/docs"
-	@echo "Auth token: $(AUTH_TOKEN)"
-	@echo ""
-	@AUTH_TOKEN=$(AUTH_TOKEN) \
-	MODEL_NAME=$(MODEL_NAME) \
-	PRETRAINED=$(PRETRAINED) \
-	poetry run uvicorn app.main:app --reload --port $(PORT)
 
 # Run tests in Docker
 test:
@@ -113,19 +75,6 @@ test-coverage:
 		sh -c "pytest --cov=app --cov-report=html --cov-report=term"
 	@echo ""
 	@echo "✓ Coverage report generated in htmlcov/index.html"
-
-# Lint code
-lint:
-	@echo "Running linters..."
-	@poetry run ruff check app tests || true
-	@echo "✓ Linting complete"
-
-# Format code
-format:
-	@echo "Formatting code..."
-	@poetry run ruff format app tests
-	@poetry run ruff check --fix app tests || true
-	@echo "✓ Code formatted"
 
 # Build Docker image
 build:
