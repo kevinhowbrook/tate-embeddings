@@ -299,9 +299,9 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
 
 #### 2. **Automatic Build Process**
    Railway reads `railway.json` and follows these steps:
-   
+
    a. **Detects Dockerfile** - Railway sees the `Dockerfile` in the repo root
-   
+
    b. **Builds Docker Image:**
       - Runs `docker build` using your Dockerfile
       - Installs Python 3.10
@@ -310,7 +310,7 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
       - Installs Poetry
       - Runs `poetry install` to install all dependencies
       - Copies your app code
-   
+
    c. **Creates Container:**
       - Creates a container from the built image
       - Injects environment variables you configured
@@ -318,7 +318,7 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
 
 #### 3. **Runtime Execution**
    Railway runs the CMD from your Dockerfile:
-   
+
    ```bash
    gunicorn app.main:app \
      --workers 4 \
@@ -326,7 +326,7 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
      --bind 0.0.0.0:$PORT \
      --timeout 120
    ```
-   
+
    This starts:
    - **4 Gunicorn worker processes** (for handling multiple requests concurrently)
    - Each worker runs **Uvicorn** (ASGI server for FastAPI)
@@ -335,7 +335,7 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
 
 #### 4. **First Startup** (~30-60 seconds)
    When the container starts for the first time:
-   
+
    - Each of the 4 workers loads the OpenCLIP model
    - Model downloads from HuggingFace (~350MB)
    - Model gets cached in container filesystem
@@ -367,13 +367,13 @@ Railway is a Platform-as-a-Service (PaaS) that automatically builds and deploys 
 3. **Configure Environment Variables**
    - Go to **Variables** tab in Railway dashboard
    - Add these required variables:
-   
+
    | Variable | Value | Notes |
    |----------|-------|-------|
    | `AUTH_TOKEN` | `<generate-secure-token>` | Generate with: `openssl rand -hex 32` |
    | `MODEL_NAME` | `ViT-B-32` | Optional, this is the default |
    | `PRETRAINED` | `laion2b_s34b_b79k` | Optional, this is the default |
-   
+
    **⚠️ Important:** Railway automatically sets `PORT` - don't set this yourself!
 
 4. **Deploy**
